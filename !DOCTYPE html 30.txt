@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Китайский: повторение уроков 1–3 • Интерактивный урок (90 мин)</title>
+<style>
+:root{
+  --red:#e63946; --blue:#1d3557; --green:#2a9d8f; --gold:#e9c46a;
+  --bg:#f6f4ef; --card:#ffffff; --ink:#222;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:"Segoe UI",Arial,sans-serif; background:var(--bg); color:var(--ink); line-height:1.5;}
+header{background:linear-gradient(135deg,var(--red),#b5172e); color:#fff; padding:18px 24px;}
+header h1{font-size:1.5rem;}
+header p{opacity:.9; font-size:.95rem;}
+.wrap{max-width:1080px; margin:0 auto; padding:16px;}
+.panel{background:var(--card); border-radius:14px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.08); margin-bottom:16px;}
+h2{color:var(--blue); margin-bottom:8px;}
+h3{color:var(--red); margin:12px 0 6px;}
+button{cursor:pointer; border:none; border-radius:10px; padding:10px 16px; font-size:1rem; background:var(--blue); color:#fff; transition:.15s;}
+button:hover{transform:translateY(-1px); box-shadow:0 3px 6px rgba(0,0,0,.2);}
+button:disabled{opacity:.4; cursor:not-allowed; transform:none;}
+.btn-red{background:var(--red);} .btn-green{background:var(--green);} .btn-gold{background:var(--gold); color:#333;}
+.btn-small{padding:6px 10px; font-size:.9rem;}
+
+/* NAV */
+nav{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0;}
+nav button{background:#fff; color:var(--blue); border:2px solid var(--blue); font-weight:600;}
+nav button.active{background:var(--blue); color:#fff;}
+.tab{display:none;} .tab.active{display:block; animation:fade .3s;}
+@keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1;}}
+
+/* TIMER */
+#timer{font-size:2.6rem; font-weight:700; text-align:center; color:var(--red); font-variant-numeric:tabular-nums;}
+.milestones{display:flex; justify-content:space-between; font-size:.75rem; margin-top:6px; color:#666; position:relative;}
+.milestones span{flex:1; text-align:center; border-top:3px solid #ddd; padding-top:4px;}
+.milestones span.done{border-color:var(--green); color:var(--green); font-weight:700;}
+
+/* PLAYERS */
+.players{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px;}
+.player{border:2px solid #ddd; border-radius:12px; padding:10px; text-align:center;}
+.player.active{border-color:var(--red); box-shadow:0 0 0 3px rgba(230,57,70,.2);}
+.player .nm{font-weight:700; font-size:1.05rem;}
+.player .sc{font-size:1.8rem; font-weight:700; color:var(--blue);}
+.player input{width:100%; padding:6px; border:1px solid #ccc; border-radius:8px; text-align:center; font-size:1rem;}
+.plusrow{display:flex; gap:6px; justify-content:center; margin-top:6px;}
+
+/* FLASHCARDS */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px;}
+.card{perspective:800px; height:170px; cursor:pointer;}
+.card .inner{position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d;}
+.card.flipped .inner{transform:rotateY(180deg);}
+.face{position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:8px; text-align:center;}
+.face.front{background:#fff; border:2px solid var(--blue);}
+.face.back{background:var(--blue); color:#fff; transform:rotateY(180deg);}
+.hanzi{font-size:2rem; font-weight:700;}
+.pinyin{color:#888; font-size:.95rem; margin-top:4px;}
+.face.back .tr{font-size:1rem;}
+
+/* MATCH */
+.match-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;}
+.mitem{padding:12px; border-radius:10px; border:2px solid #ccc; background:#fff; text-align:center; font-size:1.1rem; cursor:pointer; user-select:none;}
+.mitem.sel{border-color:var(--gold); background:#fff7e0;}
+.mitem.ok{border-color:var(--green); background:#e6f4f1; color:var(--green); cursor:default; font-weight:700;}
+.mitem.off{opacity:.35; pointer-events:none;}
+
+/* SENTENCE BUILDER */
+.chips{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0;}
+.chip{padding:8px 14px; background:var(--blue); color:#fff; border-radius:999px; cursor:pointer; font-size:1.05rem;}
+.chip:hover{background:var(--red);}
+.slotrow{display:flex; flex-wrap:wrap; gap:8px; min-height:46px; padding:8px; border:2px dashed #bbb; border-radius:10px; background:#fafafa;}
+.slot{padding:8px 14px; background:#eee; border-radius:999px; font-size:1.05rem; cursor:pointer;}
+.slot:hover{background:#ffd7d7;}
+.feedback{font-weight:700; margin-top:8px; min-height:1.4em;}
+
+/* QUIZ */
+.q{border:1px solid #e0e0e0; border-radius:10px; padding:12px; margin-bottom:10px;}
+.q .opts{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;}
+.opt{padding:8px; border:2px solid #ccc; border-radius:8px; cursor:pointer; background:#fff; text-align:center;}
+.opt:hover{border-color:var(--blue);}
+.opt.right{border-color:var(--green); background:#e6f4f1;}
+.opt.wrong{border-color:var(--red); background:#fdeaea;}
+
+/* GAME */
+.buzzword{font-size:3rem; font-weight:700; text-align:center; padding:24px; background:#fff; border:3px solid var(--red); border-radius:14px; margin:10px 0;}
+.buzzrow{display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin:8px 0;}
+.role{border:2px solid var(--blue); border-radius:10px; padding:10px; background:#eef4fb;}
+
+/* TABLES */
+table{width:100%; border-collapse:collapse; margin:8px 0;}
+th,td{border:1px solid #ddd; padding:8px; text-align:left;}
+th{background:var(--blue); color:#fff;}
+tr:nth-child(even){background:#fafafa;}
+
+.hanzi-big{font-size:1.6rem; font-weight:700; color:var(--red);}
+.small{font-size:.85rem; color:#666;}
+.badge{display:inline-block; background:var(--gold); color:#333; border-radius:999px; padding:2px 10px; font-size:.8rem; font-weight:700; margin-bottom:6px;}
+#toast{position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:10px 20px; border-radius:999px; opacity:0; transition:.3s; pointer-events:none; z-index:99;}
+@media(max-width:640px){ .q .opts{grid-template-columns:1fr;} #timer{font-size:2rem;} }
+</style>
+</head>
+<body>
+<header>
+  <h1>🇨🇳 你好! Повторение уроков 1–3 • Интерактивный урок на 90 минут</h1>
+  <p>Темы: приветствия • имя и национальность • «Где твой дом?» Группа: 4 ученика + ведущий.</p>
+</header>
+
+<div class="wrap">
+
+<!-- ===== PLAYERS & TIMER ===== -->
+<section class="panel">
+  <h2>👥 Игроки и счёт</h2>
+  <p class="small">Впишите имена. Кнопка «Активный» — чей сейчас ход: ему начисляются баллы. Очки: ✔ = +2, ✖ = 0.</p>
+  <div class="players" id="players"></div>
+  <div style="margin-top:10px; text-align:center;">
+    <button class="btn-green btn-small" onclick="resetScores()">Обнулить счёт</button>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>⏱ Таймер урока (90 минут)</h2>
+  <div id="timer">90:00</div>
+  <div style="text-align:center; margin:6px 0;">
+    <button class="btn-red btn-small" onclick="toggleTimer()" id="tbtn">▶ Старт</button>
+    <button class="btn-small" onclick="resetTimer()">Сброс</button>
+  </div>
+  <div class="milestones" id="miles">
+    <span>0' Приветствие</span><span>5' Разминка</span><span>15' Блок 1</span><span>30' Блок 2</span><span>50' Блок 3</span><span>70' Игры</span><span>80' Тест</span><span>90' Итог</span>
+  </div>
+</section>
+
+<nav id="nav"></nav>
+
+<!-- ===== TAB 0: PLAN ===== -->
+<div class="tab active" data-tab="plan">
+  <section class="panel">
+    <h2>📋 План урока (90 минут)</h2>
+    <table>
+      <tr><th>Время</th><th>Этап</th><th>Что делаете</th></tr>
+      <tr><td>0–5'</td><td>Приветствие</td><td>Ведущий: 你好! Класс отвечает хором. Каждый представляется: 我叫…</td></tr>
+      <tr><td>5–15'</td><td>Разминка + Блок 1</td><td>Флеш-карточки урока 1, игра «Найди пару» на скорость</td></tr>
+      <tr><td>15–30'</td><td>Блок 2</td><td>Имя и национальность: сборка предложений, раунд «Переводчик»</td></tr>
+      <tr><td>30–50'</td><td>Блок 3</td><td>Города: карточки + «Цепочка диалогов» по кругу</td></tr>
+      <tr><td>50–70'</td><td>Игры на 4 человек</td><td>«Быстрый пингвин» (карточки со словом), «Кто я?» (угадай слово на лбу)</td></tr>
+      <tr><td>70–85'</td><td>Финальный тест</td><td>10 вопросов, баллы активному игроку</td></tr>
+      <tr><td>85–90'</td><td>Итоги</td><td>Победитель говорит: 我是第一名! 🏆</td></tr>
+    </table>
+    <h3>Правила игры</h3>
+    <ul style="margin-left:20px;">
+      <li>Все отвечают <b>вслух</b> по-китайски — письменно только там, где написано.</li>
+      <li>Правильный устный ответ = <b>+2</b> активному игроку. Подсказка ведущего = +1.</li>
+      <li>Нельзя повторять одного активного игрока два раза подряд.</li>
+    </ul>
+  </section>
+</div>
+
+<!-- ===== TAB 1: BLOCK 1 GREETINGS ===== -->
+<div class="tab" data-tab="b1">
+  <section class="panel">
+    <span class="badge">Блок 1 • 15'</span>
+    <h2>👋 Урок 1: Приветствия</h2>
+    <p><span class="hanzi-big">你好！ Nǐ hǎo!</span> — Привет! <span class="hanzi-big">你好吗？ Nǐ hǎo ma?</span> — Как дела? <span class="hanzi-big">我很好。 Wǒ hěn hǎo.</span> — У меня всё хорошо.</p>
+    <p class="small">Слова: 你 nǐ — ты, 好 hǎo — хороший, 我 wǒ — я, 很 hěn — очень, 吗 ma — вопросительная частица.</p>
+    <h3>1. Флеш-карточки (по очереди переворачивайте и читайте вслух)</h3>
+    <div class="cards" id="cardsB1"></div>
+    <h3>2. Игра «Найди пару» — кто быстрее?</h3>
+    <p class="small">Ведущий выбирает активного игрока. Найдите пару «иероглиф — перевод». За каждую пару +2. Затем смена игрока.</p>
+    <button class="btn-gold" onclick="buildMatch('matchB1', MATCH_B1)">🔄 Новая раскладка</button>
+    <div class="match-grid" id="matchB1"></div>
+    <p id="matchB1msg" class="feedback"></p>
+    <h3>3. Мини-диалоги в парах (3 минуты)</h3>
+    <table>
+      <tr><th>А</th><th>Б</th></tr>
+      <tr><td>你好！</td><td>你好！</td></tr>
+      <tr><td>你好吗？</td><td>我很好。</td></tr>
+      <tr><td>你好吗？</td><td>我很好。</td></tr>
+    </table>
+    <p class="small">Пары: игрок 1+2, игрок 3+4. Потом меняются. Каждая пара показывает диалог классу = +2 каждому.</p>
+  </section>
+</div>
+
+<!-- ===== TAB 2: BLOCK 2 NAME/NATION ===== -->
+<div class="tab" data-tab="b2">
+  <section class="panel">
+    <span class="badge">Блок 2 • 20'</span>
+    <h2>🙋 Урок 2: Имя и национальность</h2>
+    <p><span class="hanzi-big">你叫什么？</span> — Как тебя зовут? <span class="hanzi-big">我叫李小龙。</span> — Меня зовут Ли Сяолун.<br>
+    <span class="hanzi-big">你是哪国人？</span> — Ты из какой страны? <span class="hanzi-big">我是中国人。</span> — Я китаец.</p>
+    <p class="small">叫 jiào — звать, 什么 shénme — что, 是 shì — быть, 哪 nǎ — какой, 国 guó — страна, 人 rén — человек, 中国 Zhōngguó — Китай, 英国 Yīngguó — Англия, 美国 Měiguó — Америка.</p>
+
+    <h3>1. Собери предложение (нажимайте слова по порядку)</h3>
+    <div id="sb1"></div>
+    <div id="sb2"></div>
+
+    <h3>2. Раунд «Переводчик» — по кругу</h3>
+    <p class="small">Ведущий показывает фразу на русском → активный игрок говорит по-китайски. ✔ +2. Круг: 1→2→3→4.</p>
+    <div class="buzzrow">
+      <button class="btn-red" onclick="nextPrompt()">🎲 Следующая фраза</button>
+      <button class="btn-green btn-small" onclick="markPrompt(true)">✔ Верно +2</button>
+      <button class="btn-small" onclick="markPrompt(false)">✖ Мимо</button>
+    </div>
+    <div class="buzzword" id="promptBox">Нажмите «Следующая фраза»</div>
+
+    <h3>3. Викторина «Страны» (устно)</h3>
+    <p class="small">Ведущий спрашивает, игроки поднимают руку: 中国人 — китаец, 英国人 — англичанин, 美国人 — американец. 我是…人!</p>
+    <ul style="margin-left:20px;">
+      <li>«Ты американец?» → <b>我是美国人。</b></li>
+      <li>«Ты англичанин?» → <b>我是英国人。</b></li>
+      <li>«Ты китаец?» → <b>我是中国人。</b></li>
+    </ul>
+  </section>
+</div>
+
+<!-- ===== TAB 3: BLOCK 3 CITIES ===== -->
+<div class="tab" data-tab="b3">
+  <section class="panel">
+    <span class="badge">Блок 3 • 20'</span>
+    <h2>🏙 Урок 3: Где твой дом?</h2>
+    <p><span class="hanzi-big">你家在哪儿？ Nǐ jiā zài nǎr?</span> — Где твой дом?<br>
+    <span class="hanzi-big">我家在北京。 Wǒ jiā zài Běijīng.</span> — Мой дом в Пекине.</p>
+    <p class="small">家 jiā — дом, 在 zài — находиться в, 哪儿 nǎr — где, 北京 Běijīng, 上海 Shànghǎi, 香港 Xiānggǎng, 他 tā — он.</p>
+
+    <h3>1. Флеш-карточки</h3>
+    <div class="cards" id="cardsB3"></div>
+
+    <h3>2. Игра «Карта Китая» — найди пару «город — место»</h3>
+    <p class="small">Ведущий называет город по-русски, активный игрок кликает иероглиф, потом ищет его перевод. +2 за пару.</p>
+    <button class="btn-gold" onclick="buildMatch('matchB3', MATCH_B3)">🔄 Новая раскладка</button>
+    <div class="match-grid" id="matchB3"></div>
+    <p id="matchB3msg" class="feedback"></p>
+
+    <h3>3. Цепочка диалогов «Где твой дом?» (по кругу, 4 игрока)</h3>
+    <table>
+      <tr><th>№</th><th>Роль</th><th>Реплика</th></tr>
+      <tr><td>1</td><td>Спрашивает 2-го</td><td>你家在哪儿？</td></tr>
+      <tr><td>2</td><td>Отвечает, спрашивает 3-го</td><td>我家在<u>北京</u>。你家在哪儿？</td></tr>
+      <tr><td>3</td><td>Отвечает, спрашивает 4-го</td><td>我家在<u>上海</u>。你家在哪儿？</td></tr>
+      <tr><td>4</td><td>Отвечает, спрашивает 1-го</td><td>我家在<u>香港</u>。你家在哪儿？</td></tr>
+      <tr><td>1</td><td>Замыкает цепочку</td><td>我家在北京。</td></tr>
+    </table>
+    <p class="small">Прогнать цепочку 2 раза, меняя города. Каждый правильный круг = +2 всем.</p>
+    <h3>4. Блиц «Он/она»</h3>
+    <p class="small">Ведущий: «Он из Пекина» → игрок: <b>他家在北京。</b> «Она из Шанхая» → <b>她家在上海。</b> Смена 他/她 — внимательно!</p>
+  </section>
+</div>
+
+<!-- ===== TAB 4: GAMES ===== -->
+<div class="tab" data-tab="games">
+  <section class="panel">
+    <span class="badge">Игры • 20'</span>
+    <h2>🎮 Игры на 4 человек</h2>
+
+    <h3>Игра 1: «Быстрый пингвин» (5–7 мин)</h3>
+    <p class="small">Появляется слово на русском — кто первым назовёт его по-китайски, тот получает балл (ведущий жмет ✔). Можно играть «на вылет»: ошибся — пропуск хода.</p>
+    <div class="buzzrow">
+      <button class="btn-red" onclick="nextPenguin()">🐧 Следующее слово</button>
+      <button class="btn-green btn-small" onclick="penguinScore()">✔ Угадал</button>
+    </div>
+    <div class="buzzword" id="penguinBox">Нажмите «Следующее слово»</div>
+
+    <h3>Игра 2: «Кто я?» (7–10 мин)</h3>
+    <p class="small">Устройство: один игрок отворачивается, остальные решают, кто он (например «американец», «Пекин»). Игрок задаёт вопросы классу по-китайски: 我是中国人吗？Класс отвечает: 是 / 不是. Угадал = +3.</p>
+    <div class="role" style="margin-bottom:8px;"><b>Карточки личностей (ведущий выбирает шёпотом):</b> 中国人, 英国人, 美国人, 北京人, 上海人, 香港人, 老师 (учитель), 学生 (студент)</div>
+    <div class="buzzrow">
+      <button class="btn-gold" onclick="randomRole()">🎭 Показать роль ведущему</button>
+    </div>
+    <div class="buzzword" id="roleBox" style="font-size:2rem;">—</div>
+
+    <h3>Игра 3: «Разорви предложение» (5 мин)</h3>
+    <p class="small">Ведущий читает предложение с паузами, игроки повторяют хором всё длиннее: 我 → 我家 → 我家在 → 我家在北京。Кто сбился — выбывает до следующего предложения. Победитель раунда +3.</p>
+    <button class="btn-red" onclick="chainSentence()">🔗 Предложение для цепочки</button>
+    <div class="buzzword" id="chainBox" style="font-size:2rem;">—</div>
+  </section>
+</div>
+
+<!-- ===== TAB 5: TEST ===== -->
+<div class="tab" data-tab="test">
+  <section class="panel">
+    <span class="badge">Финальный тест • 15'</span>
+    <h2>📝 Тест: 10 вопросов</h2>
+    <p class="small">Каждый вопрос — активному игроку (круг 1→2→3→4). Баллы начисляются автоматически активному игроку.</p>
+    <div id="quiz"></div>
+    <div style="text-align:center; margin-top:10px;">
+      <button class="btn-gold" onclick="showResult()">🏁 Показать результат</button>
+    </div>
+    <h3 id="quizResult" style="text-align:center; margin-top:12px;"></h3>
+  </section>
+</div>
+
+</div>
+<div id="toast"></div>
+
+<script>
+/* ================= DATA ================= */
+const PLAYERS_KEY='cn_players';
+let players = JSON.parse(localStorage.getItem(PLAYERS_KEY)||'null') || [
+  {name:'Игрок 1',score:0},{name:'Игрок 2',score:0},{name:'Игрок 3',score:0},{name:'Игрок 4',score:0}];
+let activeIdx = 0;
+
+function savePlayers(){ localStorage.setItem(PLAYERS_KEY, JSON.stringify(players)); }
+function renderPlayers(){
+  const el=document.getElementById('players'); el.innerHTML='';
+  players.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.className='player'+(i===activeIdx?' active':'');
+    d.innerHTML=`<input value="${p.name.replace(/"/g,'&quot;')}" onchange="players[${i}].name=this.value;savePlayers();renderPlayers()">
+      <div class="sc">${p.score}</div>
+      <div class="plusrow">
+        <button class="btn-small btn-green" onclick="addScore(${i},1)">+1</button>
+        <button class="btn-small btn-red" onclick="addScore(${i},2)">+2</button>
+        <button class="btn-small" onclick="addScore(${i},-1)">−1</button>
+        <button class="btn-small btn-gold" onclick="setActive(${i})">Активный</button>
+      </div>`;
+    el.appendChild(d);
+  });
+}
+function addScore(i,n){ players[i].score+=n; savePlayers(); renderPlayers(); toast(players[i].name+' +'+n+'!'); }
+function setActive(i){ activeIdx=i; savePlayers(); renderPlayers(); toast('Ход: '+players[i].name); }
+function resetScores(){ players.forEach(p=>p.score=0); savePlayers(); renderPlayers(); }
+function addActive(n){ addScore(activeIdx,n); }
+
+/* ================= TIMER ================= */
+let T=90*60, tick=null;
+function fmt(s){return String(Math.floor(s/60))+':'+String(s%60).padStart(2,'0');}
+function drawTimer(){
+  document.getElementById('timer').textContent=fmt(T);
+  const el=document.getElementById('miles');
+  const marks=[90,85,75,60,40,20,10,0];
+  const passed=90*60-T;
+  Array.from(el.children).forEach((c,i)=>{ c.classList.toggle('done', passed>= (90-marks[i])*60); });
+}
+function toggleTimer(){
+  if(tick){ clearInterval(tick); tick=null; document.getElementById('tbtn').textContent='▶ Старт'; }
+  else { tick=setInterval(()=>{ if(T>0){T--; drawTimer();} },1000); document.getElementById('tbtn').textContent='⏸ Пауза'; }
+}
+function resetTimer(){ clearInterval(tick); tick=null; T=90*60; drawTimer(); document.getElementById('tbtn').textContent='▶ Старт'; }
+
+/* ================= NAV ================= */
+const TABS=[['plan','📋 План'],['b1','👋 Блок 1'],['b2','🙋 Блок 2'],['b3','🏙 Блок 3'],['games','🎮 Игры'],['test','📝 Тест']];
+function renderNav(){
+  const n=document.getElementById('nav'); n.innerHTML='';
+  TABS.forEach(([id,label],i)=>{
+    const b=document.createElement('button'); b.textContent=label;
+    b.onclick=()=>{ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+      document.querySelector('.tab[data-tab="'+id+'"]').classList.add('active'); b.classList.add('active'); };
+    if(i===0)b.classList.add('active');
+    n.appendChild(b);
+  });
+}
+
+/* ================= FLASHCARDS ================= */
+function makeCards(id, data){
+  const el=document.getElementById(id); el.innerHTML='';
+  data.forEach(c=>{
+    const d=document.createElement('div'); d.className='card';
+    d.innerHTML=`<div class="inner">
+      <div class="face front"><div class="hanzi">${c.h}</div><div class="pinyin">${c.p}</div></div>
+      <div class="face back"><div class="tr">${c.t}</div>${c.p?'<div class="small" style="color:#bcd;">'+c.p+'</div>':''}</div>
+    </div>`;
+    d.onclick=()=>{ d.classList.toggle('flipped'); speak(c.h); };
+    el.appendChild(d);
+  });
+}
+
+/* ================= SPEECH ================= */
+function speak(txt){
+  try{ const u=new SpeechSynthesisUtterance(txt); u.lang='zh-CN'; u.rate=.8; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){}
+}
+
+/* ================= MATCH GAME ================= */
+let MATCH_B1=[['你好','привет'],['我很好','у меня всё хорошо'],['你好吗','как дела'],['你','ты'],['我','я'],['好','хороший'],['很','очень'],['吗','частица вопроса']];
+let MATCH_B3=[['北京','Пекин'],['上海','Шанхай'],['香港','Гонконг'],['家','дом'],['在','находиться в'],['哪儿','где'],['他','он'],['我家在北京','мой дом в Пекине']];
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a;}
+function buildMatch(contId, data){
+  const box=document.getElementById(contId); box.innerHTML='';
+  document.getElementById(contId+'msg').textContent='';
+  const pairs=shuffle(data.map(x=>[...x]));
+  const left=shuffle(pairs.map(p=>p[0])), right=shuffle(pairs.map(p=>p[1]));
+  let selL=null, selR=null, done=0;
+  const map=Object.fromEntries(pairs);
+  const mk=(val,side)=>{
+    const d=document.createElement('div'); d.className='mitem'; d.textContent=val; d.dataset.v=val; d.dataset.s=side;
+    d.onclick=()=>{
+      if(d.classList.contains('ok')||d.classList.contains('off'))return;
+      if(side==='L'){ if(selL)selL.classList.remove('sel'); selL=d; }
+      else { if(selR)selR.classList.remove('sel'); selR=d; }
+      d.classList.add('sel'); speak(val);
+      if(selL&&selR){
+        if(map[selL.dataset.v]===selR.dataset.v){
+          selL.classList.add('ok'); selR.classList.add('ok');
+          selL.classList.remove('sel'); selR.classList.remove('sel');
+          done++; addActive(2); toast('Пара найдена! +2');
+          selL=selR=null;
+          if(done===pairs.length){ document.getElementById(contId+'msg').textContent='🎉 Все пары собраны! Нажмите «Новая раскладка».'; }
+        } else {
+          const a=selL,b=selR; a.classList.add('off'); b.classList.add('off');
+          setTimeout(()=>{a.classList.remove('off','sel'); b.classList.remove('off','sel');},600);
+          selL=selR=null;
+        }
+      }
+    };
+    box.appendChild(d);
+  };
+  left.forEach(v=>mk(v,'L')); right.forEach(v=>mk(v,'R'));
+}
+
+/* ================= SENTENCE BUILDER ================= */
+function buildSentence(elId, target, translation){
+  const el=document.getElementById(elId);
+  const words=shuffle(target.slice());
+  el.innerHTML=`<h3 style="margin-top:14px;">Собери: «${translation}»</h3>
+    <div class="slotrow" id="${elId}_slot"></div>
+    <div class="chips" id="${elId}_chips"></div>
+    <div class="feedback" id="${elId}_fb"></div>`;
+  const slot=document.getElementById(elId+'_slot'), chips=document.getElementById(elId+'_chips'), fb=document.getElementById(elId+'_fb');
+  let picked=[];
+  words.forEach(w=>{
+    const c=document.createElement('span'); c.className='chip'; c.textContent=w;
+    c.onclick=()=>{ chips.removeChild(c); const s=document.createElement('span'); s.className='slot'; s.textContent=w;
+      s.onclick=()=>{ slot.removeChild(s); const cc=document.createElement('span'); cc.className='chip'; cc.textContent=w; cc.onclick=c.onclick; chips.appendChild(cc);
+        picked=picked.filter(x=>x!==w); fb.textContent=''; };
+      slot.appendChild(s); picked.push(w); speak(w); check(); };
+    chips.appendChild(c);
+  });
+  function check(){
+    if(picked.length===target.length){
+      if(picked.join('|')===target.join('|')){ fb.style.color='var(--green)'; fb.textContent='✔ Верно! +2'; addActive(2); speak(picked.join('')); }
+      else { fb.style.color='var(--red)'; fb.textContent='✖ Порядок неверный, нажмите на слово, чтобы убрать.'; }
+    }
+  }
+}
+
+/* ================= PROMPTS (переводчик) ================= */
+const PROMPTS=[
+  ['Как тебя зовут?','你叫什么？'],['Меня зовут Ли Сяолун.','我叫李小龙。'],
+  ['Ты из какой страны?','你是哪国人？'],['Я китаец.','我是中国人。'],
+  ['Я англичанин.','我是英国人。'],['Я американец.','我是美国人。'],
+  ['Привет!','你好！'],['Как дела?','你好吗？'],['У меня всё хорошо.','我很好。']
+];
+let promptIdx=-1;
+function nextPrompt(){ promptIdx=(promptIdx+1)%PROMPTS.length; document.getElementById('promptBox').textContent='🇷🇺 '+PROMPTS[promptIdx][0]; }
+function markPrompt(ok){ if(promptIdx<0)return;
+  document.getElementById('promptBox').innerHTML='🇷🇺 '+PROMPTS[promptIdx][0]+'<br><span style="color:var(--green); font-size:1.4rem;">'+PROMPTS[promptIdx][1]+'</span>';
+  speak(PROMPTS[promptIdx][1]); if(ok)addActive(2); }
+
+/* ================= GAMES ================= */
+const PENGUIN=[['привет','你好'],['ты','你'],['я','我'],['хороший','好'],['очень','很'],
+ ['страна','国'],['человек','人'],['Китай','中国'],['Англия','英国'],['Америка','美国'],
+ ['дом','家'],['где','哪儿'],['Пекин','北京'],['Шанхай','上海'],['Гонконг','香港'],['он','他'],
+ ['звать','叫'],['что','什么'],['быть','是'],['какой','哪']];
+let pIdx=-1;
+function nextPenguin(){ pIdx=Math.floor(Math.random()*PENGUIN.length); document.getElementById('penguinBox').textContent='🇷🇺 '+PENGUIN[pIdx][0]; }
+function penguinScore(){ if(pIdx<0)return; const ans=PENGUIN[pIdx][1]; document.getElementById('penguinBox').innerHTML=PENGUIN[pIdx][0]+' = <span style="color:var(--green)">'+ans+'</span>'; speak(ans); addActive(2); }
+
+const ROLES=['中国人','英国人','美国人','北京人','上海人','香港人','老师','学生'];
+function randomRole(){ const r=ROLES[Math.floor(Math.random()*ROLES.length)]; document.getElementById('roleBox').textContent=r; speak(r); }
+
+const CHAINS=['我家在北京。','我家在上海。','我是中国人。','你好吗？我很好。','你是哪国人？','我叫李小龙。'];
+function chainSentence(){ const c=CHAINS[Math.floor(Math.random()*CHAINS.length)]; document.getElementById('chainBox').textContent=c; speak(c); }
+
+/* ================= QUIZ ================= */
+const QUIZ=[
+ {q:'你好！ — это…', o:['До свидания','Привет!','Спасибо','Пока'], a:1},
+ {q:'«Как дела?» по-китайски:', o:['我很好','你叫什么','你好吗','你在哪儿'], a:2},
+ {q:'很 hěn означает…', o:['не','очень','и','я'], a:1},
+ {q:'Как спросить «Как тебя зовут?»', o:['你叫什么？','你是哪国人？','你家在哪儿？','你好吗？'], a:0},
+ {q:'Меня зовут Ли Сяолун:', o:['我是中国人。','我叫李小龙。','我家在北京。','你叫什么？'], a:1},
+ {q:'«Ты из какой страны?» — это…', o:['你叫什么？','你家在哪儿？','你是哪国人？','你好吗？'], a:2},
+ {q:'Я американец:', o:['我是美国人。','我是英国人。','我是中国人。','我家在美国。'], a:0},
+ {q:'«Где твой дом?» по-китайски:', o:['你在哪儿？','你家在哪儿？','你在北京吗？','你是哪国人？'], a:1},
+ {q:'Мой дом в Шанхае:', o:['我家在北京。','他在上海。','我家在上海。','我是上海人。'], a:2},
+ {q:'哪儿 nǎr означает…', o:['кто','где','когда','почему'], a:1},
+];
+function renderQuiz(){
+  const q=document.getElementById('quiz'); q.innerHTML='';
+  QUIZ.forEach((item,qi)=>{
+    const d=document.createElement('div'); d.className='q';
+    d.innerHTML=`<b>${qi+1}. ${item.q}</b><div class="opts"></div>`;
+    const opts=d.querySelector('.opts');
+    item.o.forEach((o,oi)=>{
+      const b=document.createElement('div'); b.className='opt'; b.textContent=o;
+      b.onclick=()=>{
+        if(d.dataset.done)return; d.dataset.done='1';
+        Array.from(opts.children).forEach((x,xi)=>{ if(xi===item.a)x.classList.add('right'); });
+        if(oi===item.a){ addActive(2); toast('✔ Верно! +2'); }
+        else { b.classList.add('wrong'); speak(item.o[item.a]); }
+      };
+      opts.appendChild(b);
+    });
+    q.appendChild(d);
+  });
+}
+function showResult(){
+  const best=Math.max(...players.map(p=>p.score));
+  const winners=players.filter(p=>p.score===best).map(p=>p.name);
+  document.getElementById('quizResult').innerHTML='🏆 Победитель: <b>'+winners.join(', ')+'</b> ('+best+' баллов) — скажите: 我是第一名！ Wǒ shì dì-yī míng!';
+}
+
+/* ================= TOAST ================= */
+let toastT=null;
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.style.opacity=1;
+  clearTimeout(toastT); toastT=setTimeout(()=>t.style.opacity=0,1500); }
+
+/* ================= INIT ================= */
+renderPlayers(); renderNav(); drawTimer();
+makeCards('cardsB1',[
+ {h:'你好',p:'nǐ hǎo',t:'привет!'},{h:'你好吗？',p:'nǐ hǎo ma',t:'как дела?'},
+ {h:'我很好。',p:'wǒ hěn hǎo',t:'у меня всё хорошо'},{h:'你',p:'nǐ',t:'ты'},
+ {h:'我',p:'wǒ',t:'я'},{h:'好',p:'hǎo',t:'хороший'},{h:'很',p:'hěn',t:'очень'},{h:'吗',p:'ma',t:'частица вопроса'}]);
+makeCards('cardsB3',[
+ {h:'家',p:'jiā',t:'дом'},{h:'在',p:'zài',t:'находиться в'},
+ {h:'哪儿',p:'nǎr',t:'где?'},{h:'北京',p:'Běijīng',t:'Пекин'},
+ {h:'上海',p:'Shànghǎi',t:'Шанхай'},{h:'香港',p:'Xiānggǎng',t:'Гонконг'},{h:'他',p:'tā',t:'он'}]);
+buildMatch('matchB1',MATCH_B1);
+buildSentence('sb1',['你','叫什么','？'],'Как тебя зовут?');
+buildSentence('sb2',['你是','哪国','人','？'],'Ты из какой страны?');
+buildMatch('matchB3',MATCH_B3);
+renderQuiz();
+</script>
+</body>
+</html>
